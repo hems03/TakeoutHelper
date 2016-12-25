@@ -1,0 +1,55 @@
+<!doctype>
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0"/>
+ 
+
+  <!-- CSS  -->
+  <link rel="icon" href="hamburger.png">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link href="css/materialize.css" type="text/css" rel="stylesheet" media="screen,projection"/>
+  <link href="css/style.css" type="text/css" rel="stylesheet" media="screen,projection"/>
+	<title>Foods</title>
+</head>
+<body>
+	<nav class="red" role="navigation">
+    <div class="nav-wrapper container"><a id="logo-container" href="#" class="brand-logo center">What are {{name}}'s Favorite Foods?</a>
+     <ul class="right hide-on-med-and-down">
+       <li><a class="waves-effect waves-light black btn-large">Done</a></li>
+      </ul>
+     
+
+      
+      <!--<a href="#" data-activates="nav-mobile" class="button-collapse"><i class="material-icons">menu</i></a>-->
+    </div>
+  </nav>
+  	\
+      <div class="row s2 m2">
+      	{{#each foods}}
+        <div class="col s2 m2">
+          <div class="card waves-effect waves-light">
+            <div class="card-image">
+              <img src={{this.image}}>
+              <span class="card-title black-txt">{{this.food}}</span>
+            </div>
+            <div class="card-content">
+              <p>I am a very simple card. I am good at containing small bits of information.
+              I am convenient because I require little markup to use effectively.</p>
+            </div>
+            
+          </div>
+        </div>
+        {{/each}}
+      </div>
+     
+
+
+
+ 	<script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+  	<script src="js/materialize.js"></script>
+  	<script src="js/init.js"></script>
+  	<script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/2.0.0/handlebars.js"></script>
+</body>
+</html>

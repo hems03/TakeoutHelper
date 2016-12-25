@@ -1,0 +1,19 @@
+{
+  "name": "takeout_reminder",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Hemanth",
+  "license": "MIT",
+  "dependencies": {
+    "body-parser": "^1.15.2",
+    "express": "^4.14.0",
+    "express3-handlebars": "^0.5.2",
+    "mongoose": "^4.2.6",
+    "node-bing-api": "^3.0.1",
+    "node-materialize": "^1.1.1"
+  }
+}
