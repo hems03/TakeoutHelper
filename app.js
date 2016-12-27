@@ -55,7 +55,7 @@ var opts={
 		}
 	}
 };
-//mongoose.connect("mongodb://hems03:bobby007@ds143588.mlab.com:43588/takeout",opts);
+
 
 var Materialize = require('node-materialize');
 app.use(express.static(__dirname + "/public"));
@@ -77,12 +77,20 @@ app.post('/process',function(req,res){
 		last_name:req.body.last_name,
 		phone_number:req.body.phone_number
 	})
-	/*newUser.save(function(err,res){
-		if(err)return console.error(err);
-		console.log("User Saved");
+	mongoose.connect("mongodb://hems03:bobby007@ds143588.mlab.com:43588/takeout",
+		opts,
+		function(err){
+			if(err) return console.error(err);
+			newUser.save(function(err,res){
+				if(err)return console.error(err);
+				console.log("User Saved");
+			});
+			res.render('foods',{name:req.body.first_name,foods:foodObjs});
+	/*
 	})*/
-	res.render('foods',{name:req.body.first_name,foods:foodObjs});
-})
+	
+	});
+});
 
 app.listen(app.get('port'), function(){
   console.log( 'Express started on http://localhost:' + 
