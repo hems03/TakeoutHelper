@@ -11,6 +11,12 @@
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <link href="css/materialize.css" type="text/css" rel="stylesheet" media="screen,projection"/>
   <link href="css/style.css" type="text/css" rel="stylesheet" media="screen,projection"/>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+  <style type="text/css">
+    .highlight{
+      background-color: grey;
+    }
+  </style>
 	<title>Foods</title>
 </head>
 <body>
@@ -29,7 +35,7 @@
       <div class="row s2 m2">
       	{{#each foods}}
         <div class="col s2 m2">
-          <div class="card waves-effect waves-light">
+          <div class="card waves-effect waves-light" id="{{this.food}}_card" >
             <div class="card-image">
               <img src={{this.image}}>
               <span class="card-title black-txt">{{this.food}}</span>
@@ -40,13 +46,25 @@
             </div>
             
           </div>
+          <script type="text/javascript">
+            $(document).ready(function(){
+              $("#{{this.food}}_card").click(function(){
+                if($("#{{this.food}}_card").hasClass('highlight')){
+                  $("#{{this.food}}_card").removeClass('highlight');
+                }else{
+                  $("#{{this.food}}_card").addClass('highlight');
+                }
+              });
+            });
+
+          </script>
         </div>
         {{/each}}
       </div>
      
 
 
-
+  
  	<script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
   	<script src="js/materialize.js"></script>
   	<script src="js/init.js"></script>
