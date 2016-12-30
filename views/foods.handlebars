@@ -23,22 +23,23 @@
 	<nav class="red" role="navigation">
     <div class="nav-wrapper container"><a id="logo-container" href="#" class="brand-logo center">What are {{name}}'s Favorite Foods?</a>
      <ul class="right hide-on-med-and-down">
-       <li><a class="waves-effect waves-light black btn-large">Done</a></li>
-      </ul>
+       <li><a class="waves-effect waves-light black btn-large" id="done_button">Done</a></li>
+       
+    </ul>
      
 
       
       <!--<a href="#" data-activates="nav-mobile" class="button-collapse"><i class="material-icons">menu</i></a>-->
     </div>
   </nav>
-  	\
-      <div class="row s2 m2">
+  	
+      <div class="row s2 m2" id="card_grid">
       	{{#each foods}}
         <div class="col s2 m2">
           <div class="card waves-effect waves-light" id="{{this.food}}_card" >
             <div class="card-image">
               <img src={{this.image}}>
-              <span class="card-title black-txt">{{this.food}}</span>
+              <span class="card-title black-text">{{this.food}}</span>
             </div>
             <div class="card-content">
               <p>I am a very simple card. I am good at containing small bits of information.
@@ -61,10 +62,36 @@
         </div>
         {{/each}}
       </div>
+      <script type="text/javascript">
+        $(document).ready(function(){
+          var i=0;
+          
+          $("#done_button").click(function(){
+            var pickedFoods=[];
+             $("#card_grid").find('.card').each(function(){
+              if($(this).hasClass('highlight')){
+                $(this).find('span').each(function(){
+                  pickedFoods.push({"food":$(this).text()});
+                });
+              }
+              });
+             $.ajax({
+              url:'/picked_foods',
+              type:'POST',
+              data:{'foods':pickedFoods,"phone":"{{phone_number}}"}
+
+             });
+            
+          })
+          
+        });
+        
+
+      </script>
+      
      
 
 
-  
  	<script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
   	<script src="js/materialize.js"></script>
   	<script src="js/init.js"></script>

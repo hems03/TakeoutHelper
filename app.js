@@ -3,7 +3,11 @@ var request=require('request');
 var app=express();
 var path = require('path');
 var Bing = require('node-bing-api')({ accKey: "20aacff8d7144aa1b2e0befe613b89a7" });
-var handlebars = require('express3-handlebars').create({
+var helpers = require('handlebars-helpers');
+var array = helpers.array();
+var Handlebars = require('express3-handlebars');
+var HBS=require('handlebars');
+var handlebars=Handlebars.create({
 	layoutsDir: path.join(__dirname, "views"),
     
     helpers: {
@@ -11,9 +15,28 @@ var handlebars = require('express3-handlebars').create({
             if(!this._sections) this._sections = {};
             this._sections[name] = options.fn(this);
             return null;
+        },
+        arrayify:function(stuff){
+        	var arr=[];
+        	var i=0;
+        	stuff=JSON.stringify(stuff);
+        	while(stuff.indexOf(",")!=-1){
+        		
+        		arr.push(stuff.substr(0,stuff.indexOf(",")));
+        		i=stuff.indexOf(",");
+        		stuff=stuff.substr(i+1,stuff.length-1);
+        	}
+        	return(arr);
+        },
+        json:function(stuff){
+        	return(JSON.stringify(stuff));
         }
     }
 });
+
+
+
+
 
 request('https://rumobile.rutgers.edu/1/rutgers-dining.txt', function (error, response, body) {
   if (!error && response.statusCode == 200) {
@@ -36,6 +59,7 @@ function getFoodImages(ruFoodIndex, ruFoods){
 		return;
 	}
 	Bing.images(ruFoods[ruFoodIndex],function(error, res, body){
+		if (error) return console.error(error);
     	foodObjs.push({food:ruFoods[ruFoodIndex],image:body.value[0].contentUrl});
     	console.log(body.value[0].contentUrl);
     	getFoodImages(++ruFoodIndex,ruFoods);
@@ -84,13 +108,39 @@ app.post('/process',function(req,res){
 			newUser.save(function(err,res){
 				if(err)return console.error(err);
 				console.log("User Saved");
+				
 			});
-			res.render('foods',{name:req.body.first_name,foods:foodObjs});
+
+			res.render('foods',{name:req.body.first_name,foods:foodObjs,phone_number:req.body.phone_number});
 	/*
 	})*/
 	
 	});
 });
+
+app.post("/picked_foods",function(req,res){
+	console.log(req.body);
+	res.render('thanks',{});
+	User.findOne({phone_number:req.body.phone},function(err,doc){
+		if(err)return console.error(err);
+		doc.foods=req.body.foods;
+		debugger;
+		doc.save(function(err,mongoRes){
+			if(err) return console.error(err);
+			console.log('User Foods Updated');
+			mongoose.connection.close();
+
+			
+		});
+		
+	});
+	
+
+});
+
+
+
+
 
 app.listen(app.get('port'), function(){
   console.log( 'Express started on http://localhost:' + 

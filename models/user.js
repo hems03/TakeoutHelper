@@ -1,9 +1,10 @@
 var mongoose=require('mongoose');
+var foodSchema=mongoose.Schema({food:String});
 var userSchema=mongoose.Schema({
 	first_name:String,
 	last_name:String,
 	phone_number:String,
-	foods:[String]
+	foods:[foodSchema]
 });
 userSchema.methods.getFoods=function(){
 	return this.foods;
