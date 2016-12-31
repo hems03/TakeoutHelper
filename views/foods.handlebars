@@ -7,7 +7,7 @@
  
 
   <!-- CSS  -->
-  <link rel="icon" href="hamburger.png">
+  <link rel="icon" href="hamburger">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <link href="css/materialize.css" type="text/css" rel="stylesheet" media="screen,projection"/>
   <link href="css/style.css" type="text/css" rel="stylesheet" media="screen,projection"/>
@@ -38,7 +38,7 @@
         <div class="col s2 m2">
           <div class="card waves-effect waves-light" id="{{this.food}}_card" >
             <div class="card-image">
-              <img src={{this.image}}>
+              <img src="hamburger.png">
               <span class="card-title black-text">{{this.food}}</span>
             </div>
             <div class="card-content">
@@ -71,16 +71,23 @@
              $("#card_grid").find('.card').each(function(){
               if($(this).hasClass('highlight')){
                 $(this).find('span').each(function(){
-                  pickedFoods.push({"food":$(this).text()});
+                  pickedFoods.push({"food":$(this).text().replace(new RegExp('_','g'),' ')});
                 });
               }
               });
              $.ajax({
               url:'/picked_foods',
               type:'POST',
-              data:{'foods':pickedFoods,"phone":"{{phone_number}}"}
+              data:{'foods':pickedFoods,"phone":"{{phone_number}}"},
+              success:function(data){
+                console.log('POST Complete');
+              },
+              error:function(data){
+                console.log(data);
+              }
 
              });
+             window.location.replace('thanks');
             
           })
           
