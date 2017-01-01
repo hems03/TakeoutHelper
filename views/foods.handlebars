@@ -74,12 +74,16 @@
                 });
               }
               });
+
              $.ajax({
               url:'/picked_foods',
               type:'POST',
               data:{'foods':pickedFoods,"phone":"{{phone_number}}"},
+              dataType:"json",
               success:function(data){
                 console.log('POST Complete');
+                
+            
               },
               error:function(data){
                 console.log(data);
@@ -87,6 +91,7 @@
 
              });
              window.location.replace('thanks');
+           
             
           })
           

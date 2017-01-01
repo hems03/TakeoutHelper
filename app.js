@@ -41,22 +41,37 @@ var menu=JSON.parse(fs.readFileSync('menu','utf8'));
 
 function getMatchingFoods(favorites,menu){
 	console.log(favorites);
-	var matchedLunchFoods=[];
-	
 
+	
+	var result=[];
 	menu.forEach(function(hallObj){
 		var lunchObj=hallObj.meals[1].genres[hallObj.meals[1].genres.length-1];
 		console.log("Lunch Takeout for "+hallObj.location_name+": "+lunchObj);
-		
+		var matchedLunchFoods=[];
 		lunchObj.items.forEach(function(lunchFood){
-			favorites.forEach(function(favFood){
-				if(lunchFood.valueOf()==favFood.valueOf()){
-					matchedLunchFoods.push(favFood);
-				}
+			favorites.forEach(function(favFoodObj){
+				var words=favFoodObj.food.split(' ');
+				var match=true;
+				words.every(function(word,index){
+					if(lunchFood.includes(word)){
+						return true;
+					}
+					match=false;
+					return (match);
+				});
+				if(match){
+					matchedLunchFoods.push(favFoodObj.food);
+				};
 			});
 		});
+		if(matchedLunchFoods.length!=0){
+				result.push({
+					hall:hallObj.location_name,
+					matched_foods:matchedLunchFoods
+				});
+		}
     });
-    return(matchedLunchFoods);
+    return(result);
 }
 
 
@@ -72,7 +87,7 @@ function getMatchingFoods(favorites,menu){
 });*/
 
 
-
+//Will add all foods come next semester
 var foods=["Hoagie Roll",
                      "Cookie Assortment",
                      "Genoa Salami",
@@ -107,29 +122,12 @@ function getFoodIDs(foods){
 	return(foodIds);
 }
 
-/*function getFoodImages(ruFoodIndex, ruFoods){
-	if(ruFoodIndex>=ruFoods.length){
-		return;
-	}
-	Bing.images(ruFoods[ruFoodIndex],function(error, res, body){
-		if (error) return console.error(error);
-    	console.log(body.value[0].contentUrl);
-    	request(body.value[0].contentUrl).pipe(fs.createWriteStream(ruFoods[ruFoodIndex]
-    		.replace(new RegExp(" ","g"),"_")+'.jpg'));
-    	getFoodImages(++ruFoodIndex,ruFoods);
-
-  	})
-}
-getFoodImages(0,foods);*/
-
 var User=require('./models/user.js');
 var mongoose=require('mongoose');
 var opts={
 	server:{
 		socketOptions:{
-			keepAlive:30000,
-			 socketTimeoutMS: 30000,
-      		connectionTimeoutMS: 30000
+			keepAlive:30000
 		}
 	}
 };
@@ -146,21 +144,27 @@ app.get('/takeout',function(req,res){
 })
 
 app.post('/process',function(req,res){
-	console.log(req.body);
 	var newUser= new User({
 		first_name:req.body.first_name,
 		last_name:req.body.last_name,
 		phone_number:req.body.phone_number
 	})
-	mongoose.connect("mongodb://hems03:bobby007@ds143588.mlab.com:43588/takeout",
+	mongoose.connect("mongodb://anyone:anyone@ds143588.mlab.com:43588/takeout",
 		opts,
 		function(err){
 			if(err) return console.error(err);
-			newUser.save(function(err,res){
-				if(err)return console.error(err);
-				console.log("User Saved");
+			User.findOne({phone_number:req.body.phone_number},function(err,doc){
+				if(doc!=null){
+					newUser.save(function(err,res){
+							if(err)return console.error(err);
+							console.log("User Saved");
 				
-			});
+					});
+				}else{
+					console.log('User Being Updated');
+				}
+			})
+			
 			mongoose.connection.close();
 			res.render('foods',{name:req.body.first_name,foods:getFoodIDs(foods),phone_number:req.body.phone_number});
 	/*
@@ -179,12 +183,12 @@ function saveUserFoods(phoneNumber,foods){
 					if(err) return console.error(err);
 					console.log('User Foods Updated');
 					var rule=new schedule.RecurrenceRule();
-					rule.dayOfWeek=[0,schedule.Range(0,5)];
-					rule.hour=13;
-					rule.minute=17;
+					rule.dayOfWeek=[0,schedule.Range(0,6)];
+					rule.hour=11;
+					rule.minute=28;
 					var j=schedule.scheduleJob(rule,function(){
-						var mathedFoods=getMatchingFoods(mongoRes.foods,menu);
-						console.log(mathedFoods);
+						var matchedFoods=getMatchingFoods(mongoRes.foods,menu);
+						console.log("Matched Foods:"+matchedFoods);
 					})
 					mongoose.connection.close();
 					
@@ -195,7 +199,7 @@ function saveUserFoods(phoneNumber,foods){
 app.post("/picked_foods",function(req,res){
 	console.log(req.body);
 	if(mongoose.connection.readyState==0){
-		mongoose.connect("mongodb://hems03:bobby007@ds143588.mlab.com:43588/takeout",
+		mongoose.connect("mongodb://anyone:anyone@ds143588.mlab.com:43588/takeout",
 		opts,
 		function(err){
 			if (err) return console.error(err);
