@@ -1,9 +1,10 @@
 var express=require('express');
 var request=require('request');
 var fs=require('fs');
+var easyimg=require('easyimage');
 var app=express();
 var path = require('path');
-var Bing = require('node-bing-api')({ accKey: "20aacff8d7144aa1b2e0befe613b89a7" });
+var Bing = require('node-bing-api')({ accKey: "58721dab6e1f43238bade8e6fd9ab8fa" });
 var helpers = require('handlebars-helpers');
 var array = helpers.array();
 var Handlebars = require('express3-handlebars');
@@ -34,8 +35,6 @@ var handlebars=Handlebars.create({
         }
     }
 });
-
-
 
 //Dummy Menu 
 var menu=JSON.parse(fs.readFileSync('menu','utf8'));
@@ -74,56 +73,54 @@ function getMatchingFoods(favorites,menu){
 
 
 
-var foods=["12\" Hoagie Roll",
-                     "Cheese Pizza",
-                     "Chip Assortment T/O",
-                     "Cookie Assortment T/O",
+var foods=["Hoagie Roll",
+                     "Cookie Assortment",
                      "Genoa Salami",
                      "Grilled Chicken Caesar Salad",
-                     "Italian Meatballs .5 Oz",
-                     "Multigrain Sub Roll",
-                     "Ranch Dressing Ff",
+                     "Italian Meatballs",
                      "Roast Beef",
                      "Tuna Salad",
                      "Turkey Breast",
-                     "Ultimo Pepperoni Pizza Takeout",
                      "Variety Wraps",
                      "Beef Meatball Sub Knight Room",
                      "Chicken Caesar Wrap",
-                     "Chips Take Out",
                      "Double Turkey On A Croissant",
                      "Fresh Garden Salad",
                      "Grilled Buffalo Chicken Salad",
-                     "Grilled Chicken Caesar Salad",
-                     "Italian Dressing",
-                     "Multigrain Sub Roll",
-                     "P,B, & J",
+                     "P B and J",
                      "Round Cheese Pizza",
                      "Round Pepperoni Pizza",
                      "Teriyaki Sesame Tofu",
                      "Big Martys Hamburger Bun",
-                     "Black Bean & Corn Salad K.R.",
+                     "Black Bean Corn Salad",
                      "Brew City Fry Potatoes",
-                     "Chicken Patty Brower Lto",
+                     "Chicken Patty Brower",
                      "Grilled Chicken Breast",
-                     "Knight Room Caesar Salad Plain",
                      "Knight Room Vegetable Burger",
                      "Mozzarella Cheese Sticks"
                      ];
-var foodObjs=[];
-function getFoodImages(ruFoodIndex, ruFoods){
+function getFoodIDs(foods){
+	var foodIds=[];
+	foods.forEach(function(food){
+		foodIds.push(food.replace(new RegExp(" ","g"),"_"));
+	})
+	return(foodIds);
+}
+
+/*function getFoodImages(ruFoodIndex, ruFoods){
 	if(ruFoodIndex>=ruFoods.length){
 		return;
 	}
 	Bing.images(ruFoods[ruFoodIndex],function(error, res, body){
 		if (error) return console.error(error);
-    	foodObjs.push({food:ruFoods[ruFoodIndex].replace(new RegExp(" ","g"),"_"),image:body.value[0].contentUrl});
     	console.log(body.value[0].contentUrl);
+    	request(body.value[0].contentUrl).pipe(fs.createWriteStream(ruFoods[ruFoodIndex]
+    		.replace(new RegExp(" ","g"),"_")+'.jpg'));
     	getFoodImages(++ruFoodIndex,ruFoods);
 
   	})
 }
-getFoodImages(0,foods);
+getFoodImages(0,foods);*/
 
 var User=require('./models/user.js');
 var mongoose=require('mongoose');
@@ -165,7 +162,7 @@ app.post('/process',function(req,res){
 				
 			});
 			mongoose.connection.close();
-			res.render('foods',{name:req.body.first_name,foods:foodObjs,phone_number:req.body.phone_number});
+			res.render('foods',{name:req.body.first_name,foods:getFoodIDs(foods),phone_number:req.body.phone_number});
 	/*
 	})*/
 	
