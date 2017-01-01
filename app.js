@@ -1,14 +1,10 @@
 var express=require('express');
-var request=require('request');
-var fs=require('fs');
-var easyimg=require('easyimage');
 var app=express();
+var request=require('request');
 var path = require('path');
-var Bing = require('node-bing-api')({ accKey: "58721dab6e1f43238bade8e6fd9ab8fa" });
-var helpers = require('handlebars-helpers');
-var array = helpers.array();
 var Handlebars = require('express3-handlebars');
 var schedule=require('node-schedule');
+var foodClient=require('./routes/food');
 var handlebars=Handlebars.create({
 	layoutsDir: path.join(__dirname, "views"),
     
@@ -35,93 +31,6 @@ var handlebars=Handlebars.create({
         }
     }
 });
-
-//Dummy Menu 
-var menu=JSON.parse(fs.readFileSync('menu','utf8'));
-
-function getMatchingFoods(favorites,menu){
-	console.log(favorites);
-
-	
-	var result=[];
-	menu.forEach(function(hallObj){
-		var lunchObj=hallObj.meals[1].genres[hallObj.meals[1].genres.length-1];
-		console.log("Lunch Takeout for "+hallObj.location_name+": "+lunchObj);
-		var matchedLunchFoods=[];
-		lunchObj.items.forEach(function(lunchFood){
-			favorites.forEach(function(favFoodObj){
-				var words=favFoodObj.food.split(' ');
-				var match=true;
-				words.every(function(word,index){
-					if(lunchFood.includes(word)){
-						return true;
-					}
-					match=false;
-					return (match);
-				});
-				if(match){
-					matchedLunchFoods.push(favFoodObj.food);
-				};
-			});
-		});
-		if(matchedLunchFoods.length!=0){
-				result.push({
-					hall:hallObj.location_name,
-					matched_foods:matchedLunchFoods
-				});
-		}
-    });
-    return(result);
-}
-
-
-
-/*request('https://rumobile.rutgers.edu/1/rutgers-dining.txt', function (error, response, body) {
-  if (!error && response.statusCode == 200) {
-    var menuObj=JSON.parse(body);
-
-    
-    
-
-  }
-});*/
-
-
-//Will add all foods come next semester
-var foods=["Hoagie Roll",
-                     "Cookie Assortment",
-                     "Genoa Salami",
-                     "Grilled Chicken Caesar Salad",
-                     "Italian Meatballs",
-                     "Roast Beef",
-                     "Tuna Salad",
-                     "Turkey Breast",
-                     "Variety Wraps",
-                     "Beef Meatball Sub Knight Room",
-                     "Chicken Caesar Wrap",
-                     "Double Turkey On A Croissant",
-                     "Fresh Garden Salad",
-                     "Grilled Buffalo Chicken Salad",
-                     "P B and J",
-                     "Round Cheese Pizza",
-                     "Round Pepperoni Pizza",
-                     "Teriyaki Sesame Tofu",
-                     "Big Martys Hamburger Bun",
-                     "Black Bean Corn Salad",
-                     "Brew City Fry Potatoes",
-                     "Chicken Patty Brower",
-                     "Grilled Chicken Breast",
-                     "Knight Room Vegetable Burger",
-                     "Mozzarella Cheese Sticks"
-                     ];
-function getFoodIDs(foods){
-	var foodIds=[];
-	foods.forEach(function(food){
-		foodIds.push(food.replace(new RegExp(" ","g"),"_"));
-	})
-	return(foodIds);
-}
-
 var User=require('./models/user.js');
 var mongoose=require('mongoose');
 var opts={
@@ -136,6 +45,29 @@ app.engine('handlebars', handlebars.engine);
 app.set('view engine', 'handlebars');
 app.use(require('body-parser').urlencoded({extended:true}));
 app.set('port',3000);
+
+function saveUserFoods(phoneNumber,foods){
+	
+	console.log(phoneNumber);
+	User.findOne({phone_number:phoneNumber},function(err,doc){
+				if(err)return console.error(err);
+				doc.foods=foods;
+				doc.save(function(err,mongoRes){
+					if(err) return console.error(err);
+					console.log('User Foods Updated');
+					var rule=new schedule.RecurrenceRule();
+					rule.dayOfWeek=[0,schedule.Range(0,5)];
+					rule.hour=13;
+					rule.minute=0;
+					var j=schedule.scheduleJob(rule,function(){
+						var matchedFoods=foodClient.getMatchingFoods(mongoRes.foods,menu);
+						console.log("Matched Foods:"+matchedFoods);
+					})
+					mongoose.connection.close();
+					
+			});
+	});
+}
 
 
 
@@ -166,35 +98,15 @@ app.post('/process',function(req,res){
 			})
 			
 			mongoose.connection.close();
-			res.render('foods',{name:req.body.first_name,foods:getFoodIDs(foods),phone_number:req.body.phone_number});
+			res.render('foods',
+				{name:req.body.first_name,
+					foods:foodClient.getFoodsIDs(),
+					phone_number:req.body.phone_number});
 	/*
 	})*/
 	
 	});
 });
-
-function saveUserFoods(phoneNumber,foods){
-	
-	console.log(phoneNumber);
-	User.findOne({phone_number:phoneNumber},function(err,doc){
-				if(err)return console.error(err);
-				doc.foods=foods;
-				doc.save(function(err,mongoRes){
-					if(err) return console.error(err);
-					console.log('User Foods Updated');
-					var rule=new schedule.RecurrenceRule();
-					rule.dayOfWeek=[0,schedule.Range(0,6)];
-					rule.hour=11;
-					rule.minute=28;
-					var j=schedule.scheduleJob(rule,function(){
-						var matchedFoods=getMatchingFoods(mongoRes.foods,menu);
-						console.log("Matched Foods:"+matchedFoods);
-					})
-					mongoose.connection.close();
-					
-			});
-	});
-}
 
 app.post("/picked_foods",function(req,res){
 	console.log(req.body);
@@ -216,10 +128,6 @@ app.post("/picked_foods",function(req,res){
 app.get('/thanks',function(req,res){
 	res.render('thanks');
 })
-
-
-
-
 
 app.listen(app.get('port'), function(){
   console.log( 'Express started on http://localhost:' + 
