@@ -7,13 +7,12 @@ var exports=module.exports;
 
 exports.sendLunchFoods=function(lunchFoods,phoneNumber){
 	var message="Food Favorites Being Served Today: "+JSON.stringify(lunchFoods);
-	debugger;
 	client.messages.create({ 
     	to: phoneNumber, 
     	from: " +18482307126", 
     	body: message, 
 	}, function(err, message) { 
 		if(err)console.error(err);
-    	console.log(message.sid); 
+    	console.log("Message Successfully Sent To: "+phoneNumber);
 	});
 }

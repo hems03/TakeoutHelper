@@ -2,6 +2,7 @@ var fs=require('fs');
 var menu=JSON.parse(fs.readFileSync('menu','utf8'));
 var exports = module.exports;
 
+//Need to add more takeout items
 var foods=["Hoagie Roll",
                      "Cookie Assortment",
                      "Genoa Salami",
@@ -16,7 +17,7 @@ var foods=["Hoagie Roll",
                      "Double Turkey On A Croissant",
                      "Fresh Garden Salad",
                      "Grilled Buffalo Chicken Salad",
-                     "P B and J",
+                     "P B J",
                      "Round Cheese Pizza",
                      "Round Pepperoni Pizza",
                      "Teriyaki Sesame Tofu",
@@ -36,7 +37,6 @@ exports.getMatchingFoods=function(favorites){
 	var result=[];
 	menu.forEach(function(hallObj){
 		var lunchObj=hallObj.meals[1].genres[hallObj.meals[1].genres.length-1];
-		console.log("Lunch Takeout for "+hallObj.location_name+": "+lunchObj);
 		var matchedLunchFoods=[];
 		lunchObj.items.forEach(function(lunchFood){
 			favorites.forEach(function(favFoodObj){
@@ -73,5 +73,5 @@ exports.getFoodsIDs=function(){
 }
 
 exports.getFoods=function(){
-return foods;
+	return foods;
 }

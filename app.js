@@ -60,8 +60,8 @@ function saveUserFoods(phoneNumber,foods){
 					var rule=new schedule.RecurrenceRule();
 					rule.dayOfWeek=[0,schedule.Range(0,5)];
 					var time=doc.lunch_time.split(':');
-					parseInt(time[0]);
-					parseInt(time[1]);
+					rule.hour=22//parseInt(time[0]);
+					rule.minute=3//parseInt(time[1]);
 					var j=schedule.scheduleJob(rule,function(){
 						var matchedFoods=foodClient.getMatchingFoods(mongoRes.foods);
 						console.log("Matched Foods:"+matchedFoods);
@@ -90,26 +90,33 @@ app.post('/process',function(req,res){
 	mongoose.connect("mongodb://anyone:anyone@ds143588.mlab.com:43588/takeout",
 		opts,
 		function(err){
+			var userType;
 			if(err) return console.error(err);
 			User.findOne({phone_number:req.body.phone_number},function(err,doc){
 				if(err)console.error(err);
 				if(doc==null){
+					userType='newUser';
 					newUser.save(function(err,res){
 							if(err)return console.error(err);
 							console.log("User Saved");
 				
 					});
 				}else{
+
+					userType='currentUser';
 					console.log('User Being Updated');
 				}
 				mongoose.connection.close();
-			})
-			
-			res.render('foods',
+				
+				res.render('foods',
 				{name:req.body.first_name,
 					foods:foodClient.getFoodsIDs(),
-					phone_number:req.body.phone_number
+					phone_number:req.body.phone_number,
+					userType:userType
 				});
+			})
+			
+			
 	/*
 	})*/
 	

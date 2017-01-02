@@ -63,7 +63,10 @@
       </div>
       <script type="text/javascript">
         $(document).ready(function(){
-          var i=0;
+          
+          if('{{userType}}'.valueOf()=="currentUser".valueOf()){
+            Materialize.toast('User Being Modified',2000);
+          }
           
           $("#done_button").click(function(){
             var pickedFoods=[];
