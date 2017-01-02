@@ -59,8 +59,8 @@ function saveUserFoods(phoneNumber,foods){
 					var rule=new schedule.RecurrenceRule();
 					rule.dayOfWeek=[0,schedule.Range(0,5)];
 					var time=doc.lunch_time.split(':');
-					rule.hour=22//parseInt(time[0]);
-					rule.minute=3//parseInt(time[1]);
+					rule.hour=parseInt(time[0],10);
+					rule.minute=parseInt(time[1],10);
 					var j=schedule.scheduleJob(rule,function(){
 						var matchedFoods=foodClient.getMatchingFoods(mongoRes.foods);
 						console.log("Matched Foods:"+matchedFoods);
@@ -80,46 +80,36 @@ app.get('/',function(req,res){
 
 app.post('/process',function(req,res){
 	console.log(req.body);
-	var newUser= new User({
+	var newUser= {
 		first_name:req.body.first_name,
 		last_name:req.body.last_name,
 		phone_number:req.body.phone_number,
 		lunch_time:req.body.lunch_time
-	});
+	};
+	var opts={upsert:true};
 	mongoose.connect("mongodb://anyone:anyone@ds143588.mlab.com:43588/takeout",
 		opts,
 		function(err){
 			var userType;
 			if(err) return console.error(err);
-			User.findOne({phone_number:req.body.phone_number},function(err,doc){
-				if(err)console.error(err);
-				if(doc==null){
-					userType='newUser';
-					newUser.save(function(err,res){
-							if(err)return console.error(err);
-							console.log("User Saved");
-				
+			User.findOneAndUpdate({phone_number:req.body.phone_number}
+				,{$set:newUser}
+				,opts
+				,function(err,doc){
+					if(err)console.error(err);
+					mongoose.connection.close();
+					res.render('foods',
+					{name:req.body.first_name,
+						foods:foodClient.getFoodsIDs(),
+						phone_number:req.body.phone_number,
 					});
-				}else{
-
-					userType='currentUser';
-					console.log('User Being Updated');
-				}
-				mongoose.connection.close();
-
-				res.render('foods',
-				{name:req.body.first_name,
-					foods:foodClient.getFoodsIDs(),
-					phone_number:req.body.phone_number,
-					userType:userType
-				});
-			})
+			});
 			
 			
 	/*
 	})*/
 	
-	});
+		});
 });
 
 app.post("/picked_foods",function(req,res){
@@ -143,7 +133,7 @@ app.get('/thanks',function(req,res){
 	res.render('thanks');
 })
 
-app.listen(process.env.PORT||3000, function(){
+app.listen(3000, function(){
   console.log( 'Express started on http://localhost:' + 
     app.get('port') + '; press Ctrl-C to terminate.' );
 });
