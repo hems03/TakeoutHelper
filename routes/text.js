@@ -1,4 +1,5 @@
-var accountSid = 'AC0b1f09e79d2eb190440a1d2ef4b232cb'; 
+var fs=require('fs');
+var accountSid = fs.readFileSync('routes/api_keys','utf8');
 var authToken = 'e521606e176f354a1543e63638bebc07';
 
 var client = require('twilio')(accountSid, authToken); 
@@ -15,4 +16,4 @@ exports.sendLunchFoods=function(lunchFoods,phoneNumber){
 		if(err)console.error(err);
     	console.log("Message Successfully Sent To: "+phoneNumber);
 	});
-}
+};

@@ -1,4 +1,7 @@
 var fs=require('fs');
+
+
+//Dummy Menu.
 var menu=JSON.parse(fs.readFileSync('menu','utf8'));
 var exports = module.exports;
 
