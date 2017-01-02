@@ -76,6 +76,7 @@ app.get('/takeout',function(req,res){
 })
 
 app.post('/process',function(req,res){
+	console.log(req.body);
 	var newUser= new User({
 		first_name:req.body.first_name,
 		last_name:req.body.last_name,
@@ -86,7 +87,7 @@ app.post('/process',function(req,res){
 		function(err){
 			if(err) return console.error(err);
 			User.findOne({phone_number:req.body.phone_number},function(err,doc){
-				if(doc!=null){
+				if(doc==null){
 					newUser.save(function(err,res){
 							if(err)return console.error(err);
 							console.log("User Saved");

@@ -5,6 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0"/>
   <title>TakeOut Helper</title>
 
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+
+  <script type="text/javascript" src="js/jquery.timepicker.js"></script>
+  <link rel="stylesheet" type="text/css" href="css/jquery.timepicker.css" />
+
   <!-- CSS  -->
   <link rel="icon" href="/img/hamburger.png"/>
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
@@ -62,14 +67,14 @@
           <label for="icon_telephone">Phone Number</label>
         </div>
         <div class="input-field col s6">
-          <input id="email" type="email" class="form-control" name="email">
-          <label for="email">Email</label>
+          <input id="lunch_time" type="time" name="lunch_time" class="ui-timepicker-input" autocomplete="off" min="11:00" max="17:00">
+         
         </div>
       </div>
        <div class="row center">
        		<button class="btn waves-effect waves-light" type="submit" name="action">Submit
-    		<i class="material-icons right">send</i>
-  </button>
+    		        <i class="material-icons right">send</i>
+          </button>
       </div>
       
       
