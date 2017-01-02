@@ -74,7 +74,7 @@ function saveUserFoods(phoneNumber,foods){
 
 
 
-app.get('/takeout',function(req,res){
+app.get('/',function(req,res){
 	res.render('index');
 })
 
