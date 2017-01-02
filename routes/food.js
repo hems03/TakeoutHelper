@@ -29,7 +29,7 @@ var foods=["Hoagie Roll",
                      "Mozzarella Cheese Sticks"
                      ];
 
-exports.getMatchingFoods=function(favorites,menu){
+exports.getMatchingFoods=function(favorites){
 	console.log(favorites);
 
 	

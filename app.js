@@ -5,6 +5,7 @@ var path = require('path');
 var Handlebars = require('express3-handlebars');
 var schedule=require('node-schedule');
 var foodClient=require('./routes/food');
+var textClient=require('./routes/text');
 var handlebars=Handlebars.create({
 	layoutsDir: path.join(__dirname, "views"),
     
@@ -36,7 +37,8 @@ var mongoose=require('mongoose');
 var opts={
 	server:{
 		socketOptions:{
-			keepAlive:30000
+			keepAlive:1,
+			connectTimeoutMS:30000
 		}
 	}
 };
@@ -57,11 +59,13 @@ function saveUserFoods(phoneNumber,foods){
 					console.log('User Foods Updated');
 					var rule=new schedule.RecurrenceRule();
 					rule.dayOfWeek=[0,schedule.Range(0,5)];
-					rule.hour=13;
-					rule.minute=0;
+					var time=doc.lunch_time.split(':');
+					parseInt(time[0]);
+					parseInt(time[1]);
 					var j=schedule.scheduleJob(rule,function(){
-						var matchedFoods=foodClient.getMatchingFoods(mongoRes.foods,menu);
+						var matchedFoods=foodClient.getMatchingFoods(mongoRes.foods);
 						console.log("Matched Foods:"+matchedFoods);
+						textClient.sendLunchFoods(matchedFoods,mongoRes.phone_number);
 					})
 					mongoose.connection.close();
 					
@@ -80,13 +84,15 @@ app.post('/process',function(req,res){
 	var newUser= new User({
 		first_name:req.body.first_name,
 		last_name:req.body.last_name,
-		phone_number:req.body.phone_number
-	})
+		phone_number:req.body.phone_number,
+		lunch_time:req.body.lunch_time
+	});
 	mongoose.connect("mongodb://anyone:anyone@ds143588.mlab.com:43588/takeout",
 		opts,
 		function(err){
 			if(err) return console.error(err);
 			User.findOne({phone_number:req.body.phone_number},function(err,doc){
+				if(err)console.error(err);
 				if(doc==null){
 					newUser.save(function(err,res){
 							if(err)return console.error(err);
@@ -96,13 +102,14 @@ app.post('/process',function(req,res){
 				}else{
 					console.log('User Being Updated');
 				}
+				mongoose.connection.close();
 			})
 			
-			mongoose.connection.close();
 			res.render('foods',
 				{name:req.body.first_name,
 					foods:foodClient.getFoodsIDs(),
-					phone_number:req.body.phone_number});
+					phone_number:req.body.phone_number
+				});
 	/*
 	})*/
 	

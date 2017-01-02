@@ -4,6 +4,7 @@ var userSchema=mongoose.Schema({
 	first_name:String,
 	last_name:String,
 	phone_number:String,
+	lunch_time:String,
 	foods:[foodSchema]
 });
 userSchema.methods.getFoods=function(){
