@@ -46,7 +46,6 @@ app.use(express.static(__dirname + "/public"));
 app.engine('handlebars', handlebars.engine);
 app.set('view engine', 'handlebars');
 app.use(require('body-parser').urlencoded({extended:true}));
-app.set('port',process.env.port||3000);
 
 function saveUserFoods(phoneNumber,foods){
 	
@@ -134,8 +133,9 @@ app.get('/thanks',function(req,res){
 	res.render('thanks');
 })
 
-app.listen(app.get('port'), function(){
+var port=process.env.PORT||3000;
+app.listen(port, function(){
   console.log( 'Express started on http://localhost:' 
-  	+ app.get('port')
+  	+ port
   	+ ' press Ctrl-C to terminate.' );
 });
