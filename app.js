@@ -44,17 +44,7 @@ function saveUserFoods(phoneNumber,foods){
 				doc.foods=foods;
 				doc.save(function(err,mongoRes){
 					if(err) return console.error(err);
-					console.log('User Foods Updated');
-					var rule=new schedule.RecurrenceRule();
-					rule.dayOfWeek=[0,schedule.Range(0,5)];
-					var time=doc.lunch_time.split(':');
-					rule.hour=parseInt(time[0],10);
-					rule.minute=parseInt(time[1],10);
-					var j=schedule.scheduleJob(rule,function(){
-						var matchedFoods=foodClient.getMatchingFoods(mongoRes.foods);
-						console.log("Matched Foods:"+matchedFoods);
-						textClient.sendLunchFoods(matchedFoods,mongoRes.phone_number);
-					})
+					textClient.setTextJob(doc);
 					mongoose.connection.close();
 					
 			});
