@@ -15,18 +15,7 @@ var handlebars=Handlebars.create({
             this._sections[name] = options.fn(this);
             return null;
         },
-        arrayify:function(stuff){
-        	var arr=[];
-        	var i=0;
-        	stuff=JSON.stringify(stuff);
-        	while(stuff.indexOf(",")!=-1){
-        		
-        		arr.push(stuff.substr(0,stuff.indexOf(",")));
-        		i=stuff.indexOf(",");
-        		stuff=stuff.substr(i+1,stuff.length-1);
-        	}
-        	return(arr);
-        },
+        
         json:function(stuff){
         	return(JSON.stringify(stuff));
         }
@@ -119,9 +108,6 @@ app.post("/picked_foods",function(req,res){
 	}else{
 		saveUserFoods(req.body.phone,req.body.foods);
 	}
-	
-	
-
 });
 
 app.get('/thanks',function(req,res){
