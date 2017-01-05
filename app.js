@@ -55,7 +55,7 @@ function saveUserFoods(phoneNumber,foods){
 
 app.get('/',function(req,res){
 	res.render('index');
-})
+});
 
 app.post('/process',function(req,res){
 	console.log(req.body);
