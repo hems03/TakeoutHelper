@@ -14,13 +14,23 @@
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
   <style type="text/css">
     .highlight{
-      background-color: grey;
+      opacity: 1 !important;
     }
+    .food-name{
+      font-size: 2px;
+    }
+    .submit-foods{
+      position: fixed;
+      bottom: 30px;
+      right: 20px;
+    }
+
+    
   </style>
 	<title>Foods</title>
 </head>
 <body>
-	<nav class="red" role="navigation">
+	<nav class="red col " role="navigation">
     <div class="nav-wrapper container"><a id="logo-container" href="#" class="brand-logo center">What are {{name}}'s Favorite Foods?</a>
      <ul class="right hide-on-med-and-down">
        <li><a class="waves-effect waves-light black btn-large" id="done_button">Done</a></li>
@@ -31,15 +41,17 @@
   	
       <div class="row s2 m2" id="card_grid">
       	{{#each foods}}
-        <div class="col s6 m4 l2">
-          <div class="card waves-effect waves-light" id="{{this}}_card" >
+       
+          <div class="card waves-effect waves-light col s6 m4 l2" style="opacity: .5" id="{{this}}_card" >
             <div class="card-image">
               <img src="/img/foods/{{this}}.jpg">
-              <span class="card-title">{{this}}</span>
+              <div class="container">
+                 <span class="card-title">{{this}}</span>
+
+              </div>
+             
             </div>
-            <div class="card-content">
-              <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas ultricies mauris ut molestie efficitur. Cras iaculis porttitor dolor, quis pellentesque neque tristique vitae.</p>
-            </div>
+            
             
           </div>
           <script type="text/javascript">
@@ -54,8 +66,13 @@
             });
 
           </script>
-        </div>
+        
         {{/each}}
+      </div>
+
+      <a class="btn-floating btn-large waves-effect waves-light red right-align submit-foods"><i class="material-icons">add</i></a>
+
+
       </div>
       <script type="text/javascript">
         $(document).ready(function(){
