@@ -11,6 +11,7 @@ var exports=module.exports;
 
 exports.sendLunchFoods=function(lunchFoods,phoneNumber){
 	var message="Food Favorites Being Served Today: "+JSON.stringify(lunchFoods);
+
 	client.messages.create({ 
     	to: phoneNumber, 
     	from: " +18482307126", 

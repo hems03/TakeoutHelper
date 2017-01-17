@@ -1,8 +1,8 @@
 var fs=require('fs');
+var request=require('request');
+var CronJob=require('cron').CronJob;
 
-
-//Dummy Menu.
-var menu=JSON.parse(fs.readFileSync('menu','utf8'));
+var takeoutItems;
 var exports = module.exports;
 
 //Need to add more takeout items
@@ -32,6 +32,23 @@ var foods=["Hoagie Roll",
                      "Knight Room Vegetable Burger",
                      "Mozzarella Cheese Sticks"
                      ];
+var menu;
+request('https://rumobile.rutgers.edu/1/rutgers-dining.txt',function(err,response,body){
+			menu=JSON.parse(body);
+			console.log(body);
+
+		});
+var getMenu=function(){
+	var job=new CronJob('00 00 12 * * 1-5',function(){
+		request('https://rumobile.rutgers.edu/1/rutgers-dining.txt',function(err,response,body){
+			menu=body;
+
+		});
+	}
+	,null,true,null);	
+}
+getMenu();
+
 
 exports.getMatchingFoods=function(favorites){
 	console.log(favorites);
@@ -40,6 +57,11 @@ exports.getMatchingFoods=function(favorites){
 	var result=[];
 	menu.forEach(function(hallObj){
 		var lunchObj=hallObj.meals[1].genres[hallObj.meals[1].genres.length-1];
+		console.log(lunchObj);
+		if(lunchObj.genre_name.valueOf()!='Lunch To Go'
+			&&lunchObj.genre_name.valueOf()!='Knight Room'){
+			return;
+		}
 		var matchedLunchFoods=[];
 		lunchObj.items.forEach(function(lunchFood){
 			favorites.forEach(function(favFoodObj){
