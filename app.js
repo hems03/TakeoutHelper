@@ -6,6 +6,9 @@ var Handlebars = require('express3-handlebars');
 var schedule=require('node-schedule');
 var foodClient=require('./routes/food');
 var textClient=require('./routes/text');
+
+const resizeImg = require('resize-img');
+var fs = require('fs');
 var handlebars=Handlebars.create({
 	layoutsDir: path.join(__dirname, "views"),
     
@@ -51,6 +54,21 @@ function saveUserFoods(phoneNumber,foods){
 	});
 }
 
+/*fs.readdir('newpics',function(err,files){
+	files.forEach(function(file,index){
+		resizeImg(fs.readFileSync('newpics/'+file), {width: 128, height: 128}).then(buf => {
+   		 fs.writeFileSync('public/img/foods/'+file, buf);
+   		 
+		});
+		
+
+	})
+})*/
+
+
+ 
+
+
 
 
 app.get('/',function(req,res){
@@ -71,7 +89,7 @@ app.post('/process',function(req,res){
 		function(err){
 			var userType;
 			if(err) return console.error(err);
-			User.findOneAndUpdate({phone_number:req.body.phone_number}
+			User.findOne({phone_number:req.body.phone_number}
 				,{$set:newUser}
 				,opts
 				,function(err,doc){

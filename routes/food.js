@@ -30,7 +30,13 @@ var foods=["Hoagie Roll",
                      "Chicken Patty Brower",
                      "Grilled Chicken Breast",
                      "Knight Room Vegetable Burger",
-                     "Mozzarella Cheese Sticks"
+                     "Mozzarella Cheese Sticks",
+                     'Buffalo Tofu Blue Cheese Salad',
+                     'Focaccia',
+                     'Flame Grill Vegan Burge',
+                     "Grilled Hot Dogs",
+                     "Seasoned Curly Fries",
+                     "Corn Tortilla Chips"
                      ];
 var menu;
 request('https://rumobile.rutgers.edu/1/rutgers-dining.txt',function(err,response,body){
